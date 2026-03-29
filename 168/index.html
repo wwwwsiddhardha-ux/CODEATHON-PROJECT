@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Skill Investment</title>
+  <style>
+    body { font-family: Arial; background: #0f172a; color: white; text-align:center; }
+    input { margin:5px; padding:8px; }
+    button { padding:10px; background:#22c55e; color:white; border:none; }
+    .card { background:#1e293b; padding:15px; margin:10px; border-radius:10px; }
+  </style>
+</head>
+
+<body>
+
+<h1>🚀 Skill Investment Portfolio</h1>
+
+<input id="skill" placeholder="Skill">
+<input id="interest" type="number" placeholder="Interest">
+
+<br><br>
+
+<button onclick="addSkill()">Add Skill</button>
+<button onclick="analyze()">Analyze</button>
+
+<div id="skills"></div>
+<div id="output"></div>
+
+<script>
+let skills = [];
+
+function addSkill() {
+  const name = document.getElementById("skill").value;
+  const interest = document.getElementById("interest").value;
+
+  skills.push({ name, interest });
+
+  document.getElementById("skills").innerHTML += `<p>${name}</p>`;
+}
+
+async function analyze() {
+  const res = await fetch("http://localhost:3000/analyze", {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({ skills })
+  });
+
+  const data = await res.json();
+
+  let html = "";
+
+  data.forEach(s => {
+    html += `
+      <div class="card">
+        <h3>${s.skill}</h3>
+        <p>Hours: ${s.hours}</p>
+        <p>${s.recommendation}</p>
+        <p>Risk: ${s.risk}</p>
+        <p>Reward: ${s.reward}</p>
+        <p>${s.reason}</p>
+      </div>
+    `;
+  });
+
+  document.getElementById("output").innerHTML = html;
+}
+</script>
+
+</body>
+</html>
